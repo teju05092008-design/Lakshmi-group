@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Traffic Congestion Prediction Agent</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #1f4e79;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #ccc;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            background: #1f4e79;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #163b5c;
+        }
+
+        .result {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: #eef6ff;
+            border-radius: 10px;
+        }
+
+        .high {
+            color: red;
+            font-weight: bold;
+        }
+
+        .medium {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .low {
+            color: green;
+            font-weight: bold;
+        }
+
+        .card {
+            background: #f8f8f8;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🚦 Traffic Congestion Prediction Agent</h1>
+    <p>Predict traffic congestion using time, location and weather</p>
+</header>
+
+<div class="container">
+
+    <h2>Traffic Prediction</h2>
+
+    <label>📍 Select Location</label>
+
+    <select id="location">
+        <option>Hyderabad</option>
+        <option>Secunderabad</option>
+        <option>Gachibowli</option>
+        <option>Madhapur</option>
+        <option>Kukatpally</option>
+    </select>
+
+    <label>🕐 Enter Time</label>
+
+    <input type="number" id="hour" min="0" max="23"
+           placeholder="Example: 18">
+
+    <label>🌦️ Weather</label>
+
+    <select id="weather">
+        <option>Clear</option>
+        <option>Cloudy</option>
+        <option>Rain</option>
+    </select>
+
+    <label>🚗 Number of Vehicles</label>
+
+    <input type="number" id="vehicles"
+           placeholder="Example: 350">
+
+    <label>🎉 Is there a special event?</label>
+
+    <select id="event">
+        <option>No</option>
+        <option>Yes</option>
+    </select>
+
+    <button onclick="predictTraffic()">
+        Predict Traffic 🚦
+    </button>
+
+    <div class="result" id="result">
+
+        <h2>Prediction Result</h2>
+
+        <div class="card">
+            📍 Location:
+            <strong id="resultLocation"></strong>
+        </div>
+
+        <div class="card">
+            🚦 Congestion Level:
+            <span id="congestion"></span>
+        </div>
+
+        <div class="card">
+            ⏰ Peak Time:
+            <strong id="peak"></strong>
+        </div>
+
+        <div class="card">
+            📊 Prediction Confidence:
+            <strong id="confidence"></strong>
+        </div>
+
+        <div class="card">
+            💡 Recommendation:
+            <strong id="recommendation"></strong>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function predictTraffic() {
+
+    let location =
+        document.getElementById("location").value;
+
+    let hour =
+        Number(document.getElementById("hour").value);
+
+    let weather =
+        document.getElementById("weather").value;
+
+    let vehicles =
+        Number(document.getElementById("vehicles").value);
+
+    let event =
+        document.getElementById("event").value;
+
+
+    if (hour < 0 || hour > 23 || isNaN(hour)) {
+        alert("Please enter a valid hour between 0 and 23.");
+        return;
+    }
+
+    if (isNaN(vehicles) || vehicles <= 0) {
+        alert("Please enter the number of vehicles.");
+        return;
+    }
+
+
+    // Calculate traffic score
+
+    let score = 0;
+
+    if (vehicles >= 400) {
+        score += 3;
+    }
+    else if (vehicles >= 200) {
+        score += 2;
+    }
+    else {
+        score += 1;
+    }
+
+
+    // Peak hours
+
+    let peak = false;
+
+    if ((hour >= 7 && hour <= 10) ||
+        (hour >= 17 && hour <= 21)) {
+
+        peak = true;
+        score += 2;
+    }
+
+
+    // Weather effect
+
+    if (weather === "Rain") {
+        score += 1;
+    }
+
+
+    // Event effect
+
+    if (event === "Yes") {
+        score += 1;
+    }
+
+
+    // Traffic prediction
+
+    let congestion;
+    let confidence;
+    let recommendation;
+
+    if (score >= 6) {
+
+        congestion = "HIGH";
+        confidence = "90%";
+        recommendation =
+            "Consider using an alternative route.";
+
+    }
+    else if (score >= 4) {
+
+        congestion = "MEDIUM";
+        confidence = "85%";
+        recommendation =
+            "Allow extra travel time.";
+
+    }
+    else {
+
+        congestion = "LOW";
+        confidence = "88%";
+        recommendation =
+            "Traffic conditions are normal.";
+    }
+
+
+    // Display results
+
+    document.getElementById("resultLocation")
+        .innerText = location;
+
+    let congestionElement =
+        document.getElementById("congestion");
+
+    congestionElement.innerText = congestion;
+
+    congestionElement.className = "";
+
+    if (congestion === "HIGH") {
+        congestionElement.classList.add("high");
+    }
+    else if (congestion === "MEDIUM") {
+        congestionElement.classList.add("medium");
+    }
+    else {
+        congestionElement.classList.add("low");
+    }
+
+
+    document.getElementById("peak")
+        .innerText = peak ? "YES" : "NO";
+
+    document.getElementById("confidence")
+        .innerText = confidence;
+
+    document.getElementById("recommendation")
+        .innerText = recommendation;
+
+    document.getElementById("result")
+        .style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
